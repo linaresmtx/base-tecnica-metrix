@@ -1,0 +1,2471 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Base Técnica MeTRIX | DT-Gestão-Ticket — Arquitetura Técnica & Fluxogramas Enterprise</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+              950: '#1e1b4b',
+            },
+            surface: {
+              950: '#070a12',
+              900: '#0d1322',
+              850: '#121a2d',
+              800: '#1b263b',
+              750: '#23324d',
+              700: '#2e4165',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Courier New', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #070a12;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #23324d;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4f46e5;
+    }
+    
+    /* Tab Transitions */
+    .tab-panel {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .tab-panel.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* Bus Line Animation */
+    .bus-flow {
+      stroke-dasharray: 6 3;
+      animation: busFlowMove 20s linear infinite;
+    }
+    @keyframes busFlowMove {
+      to {
+        stroke-dashoffset: -100;
+      }
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .tab-panel {
+        display: block !important;
+        opacity: 1 !important;
+        page-break-after: always;
+        break-after: page;
+      }
+      .print-card {
+        border: 1px solid #cbd5e1 !important;
+        background: #f8fafc !important;
+        color: #0f172a !important;
+        box-shadow: none !important;
+      }
+      .print-card * {
+        color: #0f172a !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-surface-950 text-slate-100 font-sans min-h-screen selection:bg-brand-500 selection:text-white flex flex-col">
+
+  <!-- Top Sticky Header -->
+  <header class="sticky top-0 z-50 bg-surface-900/95 backdrop-blur-md border-b border-surface-800 shadow-xl no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Brand & Title -->
+        <div class="flex items-center space-x-3.5">
+          <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-brand-500/25 ring-1 ring-white/10">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-base font-bold text-white tracking-tight">Base Técnica MeTRIX</span>
+              <span class="text-xs text-slate-400 font-medium">| DT-Gestão-Ticket</span>
+              <span class="px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-brand-500/20 text-brand-300 border border-brand-500/30">Enterprise v1.0</span>
+            </div>
+            <p class="text-xs text-slate-400 font-medium">Arquitetura de Software, Modelagem ERD & Fluxos Técnicos</p>
+          </div>
+        </div>
+
+        <!-- System Stats Badges -->
+        <div class="hidden lg:flex items-center space-x-2 text-xs">
+          <span class="px-2.5 py-1 rounded-md bg-surface-850 text-slate-300 border border-surface-750 font-mono">
+            <span class="text-cyan-400 font-bold">Next.js 16.4.6</span> / React 19
+          </span>
+          <span class="px-2.5 py-1 rounded-md bg-surface-850 text-slate-300 border border-surface-750 font-mono">
+            <span class="text-indigo-400 font-bold">DRF</span> / SQL Server
+          </span>
+          <span class="px-2.5 py-1 rounded-md bg-surface-850 text-slate-300 border border-surface-750 font-mono">
+            <span class="text-emerald-400 font-bold">35</span> Modelos ERD
+          </span>
+          <span class="px-2.5 py-1 rounded-md bg-surface-850 text-slate-300 border border-surface-750 font-mono">
+            <span class="text-amber-400 font-bold">1.396</span> Testes (Meta 100%)
+          </span>
+        </div>
+
+        <!-- Global Actions -->
+        <div class="flex items-center space-x-2">
+          <button onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-surface-800 hover:bg-surface-750 text-slate-200 text-xs font-medium border border-surface-700 flex items-center space-x-1.5 transition">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+            </svg>
+            <span>Imprimir / PDF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex space-x-1 overflow-x-auto py-2.5 border-t border-surface-800 scrollbar-none" id="tabsNav" role="tablist">
+        <button onclick="switchTab('tab-overview')" data-tab="tab-overview" role="tab" aria-selected="true" class="tab-btn active px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition bg-brand-600 text-white shadow-md shadow-brand-600/30">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          <span>1. Visão Geral & Stack</span>
+        </button>
+        <button onclick="switchTab('tab-userflow')" data-tab="tab-userflow" role="tab" aria-selected="false" class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition text-slate-300 hover:text-white hover:bg-surface-800">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+          <span>2. Fluxo do Usuário (4 Swimlanes)</span>
+        </button>
+        <button onclick="switchTab('tab-managerflow')" data-tab="tab-managerflow" role="tab" aria-selected="false" class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition text-slate-300 hover:text-white hover:bg-surface-800">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          <span>3. Fluxo do Gestor & Aprovações (6 Swimlanes)</span>
+        </button>
+        <button onclick="switchTab('tab-erd')" data-tab="tab-erd" role="tab" aria-selected="false" class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition text-slate-300 hover:text-white hover:bg-surface-800">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+          <span>4. Banco de Dados & ERD (35 Modelos)</span>
+        </button>
+        <button onclick="switchTab('tab-pipelines')" data-tab="tab-pipelines" role="tab" aria-selected="false" class="tab-btn px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition text-slate-300 hover:text-white hover:bg-surface-800">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          <span>5. Pipelines & Matriz de Testes (Meta 100%)</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Filter & Search Sub-Header -->
+    <div class="bg-surface-850/90 border-t border-surface-800/80 px-4 sm:px-6 lg:px-8 py-2">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+        <!-- Search Field -->
+        <div class="relative w-full md:w-96">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          <input type="text" id="globalSearch" placeholder="Pesquisar módulo, modelo, tabela, rota ou endpoint..." 
+                 oninput="handleSearch(this.value)"
+                 class="block w-full pl-9 pr-8 py-1.5 bg-surface-900 border border-surface-700 rounded-lg text-xs text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition" />
+          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-white">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <!-- Module Filter Pills -->
+        <div class="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto scrollbar-none text-xs">
+          <span class="text-slate-400 font-medium whitespace-nowrap mr-1">Filtrar:</span>
+          <button onclick="filterByModule('all')" class="module-filter-btn active px-2.5 py-1 rounded bg-brand-600 text-white font-medium hover:bg-brand-500 transition whitespace-nowrap" data-module="all">Todos</button>
+          <button onclick="filterByModule('gestao_tickets')" class="module-filter-btn px-2.5 py-1 rounded bg-surface-800 text-slate-300 font-medium hover:bg-surface-750 transition whitespace-nowrap" data-module="gestao_tickets">Tickets</button>
+          <button onclick="filterByModule('gestao_projetos')" class="module-filter-btn px-2.5 py-1 rounded bg-surface-800 text-slate-300 font-medium hover:bg-surface-750 transition whitespace-nowrap" data-module="gestao_projetos">Projetos</button>
+          <button onclick="filterByModule('gestao_suporte')" class="module-filter-btn px-2.5 py-1 rounded bg-surface-800 text-slate-300 font-medium hover:bg-surface-750 transition whitespace-nowrap" data-module="gestao_suporte">Suporte</button>
+          <button onclick="filterByModule('gestao_valor')" class="module-filter-btn px-2.5 py-1 rounded bg-surface-800 text-slate-300 font-medium hover:bg-surface-750 transition whitespace-nowrap" data-module="gestao_valor">Gestão Valor</button>
+          <button onclick="filterByModule('gestao_capacity')" class="module-filter-btn px-2.5 py-1 rounded bg-surface-800 text-slate-300 font-medium hover:bg-surface-750 transition whitespace-nowrap" data-module="gestao_capacity">Capacity</button>
+          <button onclick="filterByModule('gestao_gerencial')" class="module-filter-btn px-2.5 py-1 rounded bg-surface-800 text-slate-300 font-medium hover:bg-surface-750 transition whitespace-nowrap" data-module="gestao_gerencial">Gerencial WBS</button>
+          <button onclick="filterByModule('configuracoes')" class="module-filter-btn px-2.5 py-1 rounded bg-surface-800 text-slate-300 font-medium hover:bg-surface-750 transition whitespace-nowrap" data-module="configuracoes">Config</button>
+          <button onclick="filterByModule('auth')" class="module-filter-btn px-2.5 py-1 rounded bg-surface-800 text-slate-300 font-medium hover:bg-surface-750 transition whitespace-nowrap" data-module="auth">Auth & Core</button>
+          <button onclick="filterByModule('audit')" class="module-filter-btn px-2.5 py-1 rounded bg-surface-800 text-slate-300 font-medium hover:bg-surface-750 transition whitespace-nowrap" data-module="audit">Auditoria</button>
+        </div>
+
+        <!-- Filter Count -->
+        <div id="filterCount" class="text-xs text-slate-400 font-mono hidden md:block whitespace-nowrap">
+          Todos os elementos visíveis
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SVG Global Marker Definitions -->
+  <svg class="hidden" aria-hidden="true">
+    <defs>
+      <marker id="arrow-indigo" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#6366f1" />
+      </marker>
+      <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#10b981" />
+      </marker>
+      <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" />
+      </marker>
+      <marker id="arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
+      </marker>
+      <marker id="arrow-cyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#06b6d4" />
+      </marker>
+    </defs>
+  </svg>
+
+  <!-- Main Body Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- ========================================== -->
+    <!-- TAB 1: VISÃO GERAL & STACK ARQUITETURAL     -->
+    <!-- ========================================== -->
+    <section id="tab-overview" class="tab-panel active space-y-8" role="tabpanel">
+
+      <!-- Executive Overview Banner -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-surface-900 via-surface-850 to-brand-950/40 border border-surface-750 p-6 md:p-8 shadow-2xl">
+        <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="max-w-3xl space-y-3">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-500/15 border border-brand-500/30 text-brand-300 text-xs font-semibold">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Arquitetura Enterprise Verificada</span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+            Topologia de Camadas, Gateways & Governança PBAC
+          </h2>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            O ecossistema <span class="text-white font-semibold">DT-Gestão-Ticket</span> adota uma arquitetura em camadas desacopladas com barramento limpo, unificando gestão ágil de chamados corporativos, rastreabilidade WBS hierárquica, matriz de valor econômico (RSP), monitoramento de capacidade de equipes e controle de acesso estrito baseado em políticas (PBAC).
+          </p>
+        </div>
+
+        <!-- 5 Key Architectural Pillars -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-6 pt-6 border-t border-surface-750/80">
+          <div class="p-3 rounded-xl bg-surface-900/80 border border-surface-750">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">Camadas</span>
+            <span class="text-lg font-bold text-cyan-400">4 Layers Bus</span>
+            <span class="text-[11px] text-slate-400 block mt-0.5">Desacoplamento Zero CORS</span>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-900/80 border border-surface-750">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">Modelagem</span>
+            <span class="text-lg font-bold text-emerald-400">35 Modelos</span>
+            <span class="text-[11px] text-slate-400 block mt-0.5">5 Domínios ERD Relacionais</span>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-900/80 border border-surface-750">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">Governança</span>
+            <span class="text-lg font-bold text-indigo-400">9 Módulos PBAC</span>
+            <span class="text-[11px] text-slate-400 block mt-0.5">Revogação com Snapshot</span>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-900/80 border border-surface-750">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">Notificações</span>
+            <span class="text-lg font-bold text-amber-400">27 Eventos</span>
+            <span class="text-[11px] text-slate-400 block mt-0.5">5 Papéis + ContextThread</span>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-900/80 border border-surface-750">
+            <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">Qualidade</span>
+            <span class="text-lg font-bold text-brand-400">1.396 Testes</span>
+            <span class="text-[11px] text-slate-400 block mt-0.5">Meta 100% Cobertura</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orthogonal Layered Architecture Bus Diagram (ZERO line crossing) -->
+      <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-6" data-searchable>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-surface-800 pb-4">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+              <span class="h-2.5 w-2.5 rounded-full bg-cyan-400"></span>
+              <span>Barramento Arquitetural Ortogonal em Camadas (Layers Bus)</span>
+            </h3>
+            <p class="text-xs text-slate-400">Fluxo determinístico e unidirecional de requisições, sem cruzamento de linhas sobre blocos de texto</p>
+          </div>
+          <span class="px-2.5 py-1 text-xs font-mono rounded bg-surface-800 text-slate-300 border border-surface-700">ISO/IEC 25010 Conforme</span>
+        </div>
+
+        <!-- Layer Diagram Grid -->
+        <div class="space-y-4 font-mono text-xs">
+          
+          <!-- Layer 1: Client Interfaces -->
+          <div class="rounded-xl bg-surface-850 border-2 border-cyan-500/40 p-4 relative group hover:border-cyan-400 transition" data-module="auth">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
+              <div class="flex items-center space-x-2.5">
+                <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold text-[11px]">LAYER 1</span>
+                <span class="text-sm font-bold text-white font-sans">Camada de Clientes & Superfícies de Interação</span>
+              </div>
+              <span class="text-slate-400 text-[11px]">HTTP/2 • TLS 1.3 • Responsive Viewports</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div class="p-3 rounded-lg bg-surface-900/90 border border-surface-750">
+                <div class="text-cyan-300 font-bold mb-1">Web Desktop (Edge / Chrome)</div>
+                <p class="text-slate-400 text-[11px] font-sans">SPA responsiva, dashboards executivos, editores WBS, tabelas incrementais debounced 300ms.</p>
+              </div>
+              <div class="p-3 rounded-lg bg-surface-900/90 border border-surface-750">
+                <div class="text-cyan-300 font-bold mb-1">Mobile Web / OWA Mobile</div>
+                <p class="text-slate-400 text-[11px] font-sans">Visualização adaptada para consultas em trânsito, formulários táteis e aprovação rápida de tarefas.</p>
+              </div>
+              <div class="p-3 rounded-lg bg-surface-900/90 border border-surface-750">
+                <div class="text-cyan-300 font-bold mb-1">Email Clients (Outlook / OWA)</div>
+                <p class="text-slate-400 text-[11px] font-sans">Ações de 1-Clique via URLs tokenizadas HMAC-SHA256 para aprovação de tickets e feedback CSAT.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vertical Orthogonal Bus Connector L1 -> L2 -->
+          <div class="flex items-center justify-center my-1">
+            <div class="flex items-center space-x-2 px-3 py-1 rounded-full bg-surface-800 text-[11px] text-slate-300 border border-surface-700">
+              <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+              <span>Requisições HTTPS com Cookies httpOnly & Headers CSRF</span>
+            </div>
+          </div>
+
+          <!-- Layer 2: Frontend App Router Tier -->
+          <div class="rounded-xl bg-surface-850 border-2 border-indigo-500/40 p-4 relative group hover:border-indigo-400 transition" data-module="gestao_tickets gestao_projetos">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
+              <div class="flex items-center space-x-2.5">
+                <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold text-[11px]">LAYER 2</span>
+                <span class="text-sm font-bold text-white font-sans">Frontend Server & State Engine (Next.js 16.4.6 + React 19.2.4)</span>
+              </div>
+              <span class="text-slate-400 text-[11px]">TanStack Query v5.101.4 • Tailwind CSS v4 • App Router</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div class="p-3 rounded-lg bg-surface-900/90 border border-surface-750">
+                <div class="text-indigo-300 font-bold mb-1">Proxy Reverso `/_api` (Mesmo Host)</div>
+                <p class="text-slate-400 text-[11px] font-sans">Next.js rewrites roteiam requisições de API na mesma origem, eliminando latência e complexidade de CORS.</p>
+              </div>
+              <div class="p-3 rounded-lg bg-surface-900/90 border border-surface-750">
+                <div class="text-indigo-300 font-bold mb-1">Single-Flight Token Refresh Interceptor</div>
+                <p class="text-slate-400 text-[11px] font-sans">Fila atômica para 401s simultâneos: 1 único POST de renovação, replay seguro de todas as requisições pendentes.</p>
+              </div>
+              <div class="p-3 rounded-lg bg-surface-900/90 border border-surface-750">
+                <div class="text-indigo-300 font-bold mb-1">CSRF Protection (`dt_ticket_csrftoken`)</div>
+                <p class="text-slate-400 text-[11px] font-sans">Cookie SameSite=Lax com cabeçalho X-CSRFToken injetado em todas as mutações POST, PUT e DELETE.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vertical Orthogonal Bus Connector L2 -> L3 -->
+          <div class="flex items-center justify-center my-1">
+            <div class="flex items-center space-x-2 px-3 py-1 rounded-full bg-surface-800 text-[11px] text-slate-300 border border-surface-700">
+              <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+              <span>Barramento Interno WSGI / ASGI REST JSON (DRF Endpoints)</span>
+            </div>
+          </div>
+
+          <!-- Layer 3: API Gateway & Django Core Services -->
+          <div class="rounded-xl bg-surface-850 border-2 border-brand-500/40 p-4 relative group hover:border-brand-400 transition" data-module="auth configuracoes super_user audit">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
+              <div class="flex items-center space-x-2.5">
+                <span class="px-2 py-0.5 rounded bg-brand-500/20 text-brand-300 font-bold text-[11px]">LAYER 3</span>
+                <span class="text-sm font-bold text-white font-sans">API Gateway & Backend Services (Django 5.2.x REST Framework)</span>
+              </div>
+              <span class="text-slate-400 text-[11px]">Python 3.14 • Hybrid Auth • SHA-256 Cache • AES-256 Audit</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <div class="p-3 rounded-lg bg-surface-900/90 border border-surface-750">
+                <div class="text-brand-300 font-bold mb-1">Hybrid Auth Gateway</div>
+                <p class="text-slate-400 text-[11px] font-sans">Modo configurável: `session`, `hub` ou `both`. Valida tokens JWT e cookies `dt_ticket_access` e `dt_ticket_refresh`.</p>
+              </div>
+              <div class="p-3 rounded-lg bg-surface-900/90 border border-surface-750">
+                <div class="text-brand-300 font-bold mb-1">SHA-256 User Cache (TTL 45s)</div>
+                <p class="text-slate-400 text-[11px] font-sans">Evita sobrecarga no SQL Server cacheando permissões ativas por hash criptográfico da credencial.</p>
+              </div>
+              <div class="p-3 rounded-lg bg-surface-900/90 border border-surface-750">
+                <div class="text-brand-300 font-bold mb-1">Impersonate Engine</div>
+                <p class="text-slate-400 text-[11px] font-sans">Cookie `dt_ticket_impersonate` para superusuários, com trilha forense completa em `AuditLog`.</p>
+              </div>
+              <div class="p-3 rounded-lg bg-surface-900/90 border border-surface-750">
+                <div class="text-brand-300 font-bold mb-1">ContextThread Notifications</div>
+                <p class="text-slate-400 text-[11px] font-sans">Threads desacopladas que preservam o contexto da requisição para envio seguro via HubAPI e SMTP.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vertical Orthogonal Bus Connector L3 -> L4 & L5 -->
+          <div class="flex items-center justify-center my-1">
+            <div class="flex items-center space-x-2 px-3 py-1 rounded-full bg-surface-800 text-[11px] text-slate-300 border border-surface-700">
+              <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+              <span>Persistência Transacional ODBC / Drivers & Conexões Seguras</span>
+            </div>
+          </div>
+
+          <!-- Layer 4: Enterprise Infrastructure & Data Tier -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- Data Infrastructure -->
+            <div class="rounded-xl bg-surface-850 border-2 border-emerald-500/40 p-4 relative group hover:border-emerald-400 transition" data-module="gestao_tickets gestao_projetos gestao_capacity">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-2.5">
+                  <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[11px]">LAYER 4A</span>
+                  <span class="text-sm font-bold text-white font-sans">Persistência & Banco de Dados</span>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <div class="p-2.5 rounded-lg bg-surface-900/90 border border-surface-750">
+                  <span class="text-emerald-300 font-bold block">Microsoft SQL Server (Dev & Prod)</span>
+                  <span class="text-slate-400 text-[11px] font-sans">ODBC Driver 17 for SQL Server via `mssql-django`. Suporta `select_for_update` transacional no Pool de Capacity.</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-surface-900/90 border border-surface-750">
+                  <span class="text-emerald-300 font-bold block">SQLite In-Memory (`TEST_RUN=true`)</span>
+                  <span class="text-slate-400 text-[11px] font-sans">Execução ultra rápida para os 812 testes unitários de backend com zero dependência externa.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- External Integrations -->
+            <div class="rounded-xl bg-surface-850 border-2 border-amber-500/40 p-4 relative group hover:border-amber-400 transition" data-module="configuracoes auth">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-2.5">
+                  <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[11px]">LAYER 4B</span>
+                  <span class="text-sm font-bold text-white font-sans">Serviços Externos & Integrações</span>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <div class="p-2.5 rounded-lg bg-surface-900/90 border border-surface-750">
+                  <span class="text-amber-300 font-bold block">Semantix HubAPI (Enterprise IAM & Webhooks)</span>
+                  <span class="text-slate-400 text-[11px] font-sans">Autenticação federada corporativa, sincronização de usuários e envio de notificações em alta escala.</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-surface-900/90 border border-surface-750">
+                  <span class="text-amber-300 font-bold block">Corporate SMTP & RDP Host Monitor</span>
+                  <span class="text-slate-400 text-[11px] font-sans">Fallback resiliente para e-mails e telemetria de estações de trabalho de desenvolvedores/recursos.</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Layer 5: PBAC Governance Gatekeeper -->
+          <div class="rounded-xl bg-surface-850 border-2 border-rose-500/40 p-4 relative group hover:border-rose-400 transition" data-module="configuracoes super_user audit">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-3">
+              <div class="flex items-center space-x-2.5">
+                <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold text-[11px]">LAYER 5</span>
+                <span class="text-sm font-bold text-white font-sans">Gatekeeper de Governança PBAC (Policy-Based Access Control)</span>
+              </div>
+              <span class="text-rose-400 text-[11px] font-bold">9 Módulos Canônicos • Flag Withdrawn Snapshot</span>
+            </div>
+            <div class="p-3 rounded-lg bg-surface-900/90 border border-surface-750 font-sans text-xs text-slate-300 space-y-2">
+              <p>
+                O acesso às rotas e mutações da API é fiscalizado em tempo real pelo middleware PBAC. A revogação de permissões utiliza o modelo <code class="text-rose-300 font-mono">WithdrawnPermissionSnapshot</code>, congelando o estado histórico do usuário para auditoria forense imediata sem perda de rastreabilidade.
+              </p>
+              <div class="flex flex-wrap gap-1.5 pt-1 font-mono text-[11px]">
+                <span class="px-2 py-0.5 rounded bg-surface-800 text-slate-200 border border-surface-700">gestao_tickets</span>
+                <span class="px-2 py-0.5 rounded bg-surface-800 text-slate-200 border border-surface-700">gestao_projetos</span>
+                <span class="px-2 py-0.5 rounded bg-surface-800 text-slate-200 border border-surface-700">gestao_suporte</span>
+                <span class="px-2 py-0.5 rounded bg-surface-800 text-slate-200 border border-surface-700">gestao_valor</span>
+                <span class="px-2 py-0.5 rounded bg-surface-800 text-slate-200 border border-surface-700">gestao_capacity</span>
+                <span class="px-2 py-0.5 rounded bg-surface-800 text-slate-200 border border-surface-700">gestao_gerencial</span>
+                <span class="px-2 py-0.5 rounded bg-surface-800 text-slate-200 border border-surface-700">configuracoes</span>
+                <span class="px-2 py-0.5 rounded bg-surface-800 text-slate-200 border border-surface-700">super_user</span>
+                <span class="px-2 py-0.5 rounded bg-surface-800 text-slate-200 border border-surface-700">desenvolvedores</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 4 Deep-Dive Technical Detail Cards -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Card 1: Single-Flight Token Refresh Interceptor -->
+        <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-4" data-searchable data-module="auth">
+          <div class="flex items-center justify-between border-b border-surface-800 pb-3">
+            <h4 class="text-sm font-bold text-white flex items-center space-x-2">
+              <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+              <span>1. Single-Flight Token Refresh Pattern</span>
+            </h4>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Zero Race Conditions</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Quando múltiplas queries paralelas no TanStack Query retornam HTTP 401 Unauthorized simultaneamente (ex: ao abrir o dashboard com 6 cards), o interceptor enfileira as requisições pendentes em memória e dispara um único POST para renovação:
+          </p>
+          <div class="p-3 rounded-xl bg-surface-950 border border-surface-800 font-mono text-[11px] text-slate-300 space-y-1">
+            <div class="text-slate-500">// Interceptor de Resposta Axios/Fetch:</div>
+            <div>let isRefreshing = false;</div>
+            <div>let failedQueue: Array<{ resolve, reject }> = [];</div>
+            <div class="text-amber-400">if (status === 401 && !originalRequest._retry) {</div>
+            <div class="pl-4">if (isRefreshing) return queueRequest(originalRequest);</div>
+            <div class="pl-4">originalRequest._retry = true;</div>
+            <div class="pl-4 text-emerald-400">await post('/_api/auth/token/refresh/');</div>
+            <div class="pl-4">processQueue(null, newAccessToken);</div>
+            <div class="pl-4">return retry(originalRequest);</div>
+            <div>}</div>
+          </div>
+          <div class="text-[11px] text-slate-400 flex items-center space-x-1.5">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <span>Garante que o backend nunca receba rajadas concorrentes de refresh token inválidas.</span>
+          </div>
+        </div>
+
+        <!-- Card 2: CSRF & Same-Host Reverse Proxy -->
+        <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-4" data-searchable data-module="auth configuracoes">
+          <div class="flex items-center justify-between border-b border-surface-800 pb-3">
+            <h4 class="text-sm font-bold text-white flex items-center space-x-2">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              <span>2. Proxy Reverso `/_api` & Proteção CSRF</span>
+            </h4>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">Same-Origin Security</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            O Next.js App Router atua como proxy reverso roteando <code class="text-cyan-300 font-mono">/_api/:path*</code> diretamente para o servidor Django DRF no mesmo host. Não há necessidade de habilitar CORS irrestrito em produção.
+          </p>
+          <div class="p-3 rounded-xl bg-surface-950 border border-surface-800 font-mono text-[11px] text-slate-300 space-y-1">
+            <div class="text-slate-500">// Cookies Gerenciados com Restrição Estrita:</div>
+            <div><span class="text-cyan-400">dt_ticket_access</span>: httpOnly, SameSite=Lax, Secure</div>
+            <div><span class="text-cyan-400">dt_ticket_refresh</span>: httpOnly, SameSite=Lax, Secure</div>
+            <div><span class="text-amber-400">dt_ticket_csrftoken</span>: Readable by JS, SameSite=Lax</div>
+            <div class="pt-1 text-slate-400">// Injeção em Cabeçalho DRF:</div>
+            <div class="text-emerald-400">headers['X-CSRFToken'] = getCookie('dt_ticket_csrftoken');</div>
+          </div>
+          <div class="text-[11px] text-slate-400 flex items-center space-x-1.5">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <span>Bloqueia ataques Cross-Site Request Forgery em todos os formulários e chamadas REST.</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Hybrid Authentication Matrix -->
+        <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-4" data-searchable data-module="auth">
+          <div class="flex items-center justify-between border-b border-surface-800 pb-3">
+            <h4 class="text-sm font-bold text-white flex items-center space-x-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>3. Matriz de Autenticação Híbrida (`AUTH_MODE`)</span>
+            </h4>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Configurável por Ambiente</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            O backend implementa o padrão de autenticação híbrida controlada via variável de ambiente <code class="text-emerald-300 font-mono">AUTH_MODE</code>:
+          </p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-[11px] border border-surface-800 rounded-lg overflow-hidden">
+              <thead class="bg-surface-800 text-slate-300">
+                <tr>
+                  <th class="p-2 border-b border-surface-700">AUTH_MODE</th>
+                  <th class="p-2 border-b border-surface-700">Origem Primária</th>
+                  <th class="p-2 border-b border-surface-700">Fallback</th>
+                  <th class="p-2 border-b border-surface-700">Uso Típico</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-800 text-slate-300">
+                <tr>
+                  <td class="p-2 text-brand-300 font-bold">both</td>
+                  <td class="p-2">Semantix HubAPI (OAuth2)</td>
+                  <td class="p-2">Sessão Local SQL Server</td>
+                  <td class="p-2 text-emerald-400">Produção Corporativa</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-cyan-300 font-bold">hub</td>
+                  <td class="p-2">Semantix HubAPI Exclusivo</td>
+                  <td class="p-2 text-slate-500">Nenhum</td>
+                  <td class="p-2">Staging & Integração SSO</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-amber-300 font-bold">session</td>
+                  <td class="p-2">Django DB Auth Local</td>
+                  <td class="p-2 text-slate-500">Nenhum</td>
+                  <td class="p-2">Dev Local & Testes Offline</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="text-[11px] text-slate-400">
+            Permite operação ininterrupta do sistema mesmo em manutenções temporárias do HubAPI corporativo.
+          </div>
+        </div>
+
+        <!-- Card 4: SHA-256 User Cache (TTL 45s) -->
+        <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-4" data-searchable data-module="auth audit configuracoes">
+          <div class="flex items-center justify-between border-b border-surface-800 pb-3">
+            <h4 class="text-sm font-bold text-white flex items-center space-x-2">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span>4. Cache de Alta Performance SHA-256 (TTL 45s)</span>
+            </h4>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">Alívio do SQL Server</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Para impedir o "query storm" no banco de dados a cada clique na UI, o usuário autenticado e suas permissões ativas nos 9 módulos são cacheados em memória:
+          </p>
+          <div class="p-3 rounded-xl bg-surface-950 border border-surface-800 font-mono text-[11px] text-slate-300 space-y-1">
+            <div class="text-slate-500">// Chave de Cache Criptográfica:</div>
+            <div>cache_key = f"pbac_user_{sha256(user_id + token_secret).hexdigest()[:16]}"</div>
+            <div>cached_profile = cache.get(cache_key)</div>
+            <div class="text-emerald-400">if not cached_profile:</div>
+            <div class="pl-4">cached_profile = load_user_and_permissions(user_id)</div>
+            <div class="pl-4 text-cyan-400">cache.set(cache_key, cached_profile, timeout=45)</div>
+          </div>
+          <div class="text-[11px] text-slate-400 flex items-center space-x-1.5">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <span>Qualquer alteração de perfil em `ModulePermission` invalida a chave de cache imediatamente via signals.</span>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: FLUXO DO USUÁRIO (4 SWIMLANES)       -->
+    <!-- ========================================== -->
+    <section id="tab-userflow" class="tab-panel space-y-8" role="tabpanel">
+
+      <!-- Header Banner -->
+      <div class="rounded-2xl bg-gradient-to-r from-surface-900 via-surface-850 to-indigo-950/40 border border-surface-750 p-6 md:p-8 shadow-xl">
+        <div class="max-w-3xl space-y-2">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-semibold">
+            <span>Experiência Operacional do Usuário & Colaborador</span>
+          </div>
+          <h2 class="text-2xl font-bold text-white tracking-tight">
+            User Flows & Jornadas Funcionais em Swimlanes
+          </h2>
+          <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+            Fluxos operacionais sequenciais desenhados em pistas isoladas (Swimlanes), com endpoints associados, payloads estruturados, regras de validação e ausência de cruzamentos ambíguos.
+          </p>
+        </div>
+      </div>
+
+      <!-- SWIMLANE 1: Autenticação & Onboarding -->
+      <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-5" data-searchable data-module="auth">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+          <div class="flex items-center space-x-3">
+            <span class="h-7 w-7 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold flex items-center justify-center text-xs font-mono">S1</span>
+            <div>
+              <h3 class="text-sm font-bold text-white">Swimlane 1: Autenticação, Onboarding & Recuperação de Conta</h3>
+              <p class="text-[11px] text-slate-400">Ciclo de vida de acesso: Login unificado, Wizard de 4 passos do Primeiro Acesso e Anti-Enumeração</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-surface-800 text-cyan-300 border border-surface-700">Módulo: auth</span>
+        </div>
+
+        <!-- Horizontal Steps Sequence -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
+          
+          <!-- Step 1.1: Login -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3 relative">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-cyan-400 font-mono">Passo 1.1 • /login</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">POST /_api/login/</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Autenticação Primária</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              O usuário submete credenciais (E-mail e Senha). O backend avalia o modo <code class="text-cyan-300">AUTH_MODE</code>:
+            </p>
+            <ul class="text-[11px] text-slate-400 list-disc list-inside space-y-1">
+              <li>Valida senha no SQL Server ou token HubAPI</li>
+              <li>Emite cookies httpOnly: <code class="text-slate-200">dt_ticket_access</code> (TTL 15m) e <code class="text-slate-200">dt_ticket_refresh</code> (TTL 7d)</li>
+              <li>Emite cookie de proteção CSRF <code class="text-slate-200">dt_ticket_csrftoken</code></li>
+            </ul>
+            <div class="p-2 rounded bg-surface-900 border border-surface-800 text-[10px] font-mono text-emerald-400">
+              HTTP 200 OK -> Set-Cookie (httpOnly, SameSite=Lax)
+            </div>
+          </div>
+
+          <!-- Step 1.2: First Access Wizard -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3 relative">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-indigo-400 font-mono">Passo 1.2 • /first-access</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">4-Step Wizard</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Ativação de Primeiro Acesso</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Novo colaborador sem senha ativa ou cadastrado pelo RH:
+            </p>
+            <div class="space-y-1 text-[11px] text-slate-400">
+              <div class="flex items-center space-x-1.5"><span class="text-indigo-400 font-bold">1.</span> <span>Validação de E-mail corporativo / DAS Code</span></div>
+              <div class="flex items-center space-x-1.5"><span class="text-indigo-400 font-bold">2.</span> <span>Envio e checagem de Token (TTL rígido 15 min)</span></div>
+              <div class="flex items-center space-x-1.5"><span class="text-indigo-400 font-bold">3.</span> <span>Definição de Senha Forte (Entropia & Requisitos)</span></div>
+              <div class="flex items-center space-x-1.5"><span class="text-indigo-400 font-bold">4.</span> <span>Vinculação e Ativação do EmployeeProfile</span></div>
+            </div>
+            <div class="p-2 rounded bg-surface-900 border border-surface-800 text-[10px] font-mono text-cyan-400">
+              TimestampSigner(salt='first-access-token')
+            </div>
+          </div>
+
+          <!-- Step 1.3: Anti-Enumeration Forgot Password -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3 relative">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-400 font-mono">Passo 1.3 • /forgot-password</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">POST /_api/forgot/</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Redefinição Anti-Enumeração</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Proteção contra Timing Attacks e descoberta de contas existentes na organização:
+            </p>
+            <ul class="text-[11px] text-slate-400 list-disc list-inside space-y-1">
+              <li>Resposta padronizada invariável: <strong class="text-amber-300">HTTP 202 Accepted</strong></li>
+              <li>Tempo constante de resposta para evitar análise comparativa de timing</li>
+              <li>Disparo assíncrono via HubAPI apenas se e-mail existir na tabela <code class="text-slate-200">Users</code></li>
+            </ul>
+            <div class="p-2 rounded bg-surface-900 border border-surface-800 text-[10px] font-mono text-amber-400">
+              HTTP 202 Accepted { "message": "Instruções enviadas" }
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SWIMLANE 2: Dashboard & Minhas Tarefas -->
+      <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-5" data-searchable data-module="gestao_projetos">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+          <div class="flex items-center space-x-3">
+            <span class="h-7 w-7 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-bold flex items-center justify-center text-xs font-mono">S2</span>
+            <div>
+              <h3 class="text-sm font-bold text-white">Swimlane 2: Dashboard Pessoal & Workspace de Minhas Tarefas</h3>
+              <p class="text-[11px] text-slate-400">Execução operacional: Acompanhamento de demandas individuais, progresso WBS e submissão de conclusão</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-surface-800 text-indigo-300 border border-surface-700">Módulo: gestao_projetos</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <!-- Step 2.1: Contextual Redirect -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-indigo-400 font-mono">Passo 2.1 • /dashboard</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Auto-Redirect</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Roteamento Contextual PBAC</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Ao acessar a raiz ou <code class="text-indigo-300">/dashboard</code>, o middleware de cliente inspeciona a matriz de permissões ativas:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Gestor com <code class="text-slate-200">gestao_gerencial</code> -> Rota <code class="text-indigo-300">/gestao/dashboard</code></li>
+              <li>• Desenvolvedor/Analista -> Rota direta <code class="text-indigo-300">/minhas-tarefas</code></li>
+              <li>• Solicitante comum -> Rota padrão de chamados <code class="text-indigo-300">/tickets</code></li>
+            </ul>
+          </div>
+
+          <!-- Step 2.2: Minhas Tarefas Hub -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-indigo-400 font-mono">Passo 2.2 • /minhas-tarefas</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">GET /_api/tasks/my/</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Grid Operacional & KPIs</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Lista reativa (TanStack Query) filtrada por <code class="text-indigo-300">assigned_to_employee_id</code>:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Agrupamento dinâmico: Por Projeto WBS, Status e Urgência</li>
+              <li>• KPIs em tempo real: Horas alocadas vs horas consumidas</li>
+              <li>• Filtro por competência mensal (<code class="text-slate-200">YYYY-MM</code>)</li>
+            </ul>
+            <div class="p-2 rounded bg-surface-900 border border-surface-800 text-[10px] font-mono text-emerald-400">
+              Status: Pendente, Em Andamento, Concluída, Bloqueada
+            </div>
+          </div>
+
+          <!-- Step 2.3: Task Detail Drawer -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-indigo-400 font-mono">Passo 2.3 • /minhas-tarefas/[id]</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Drawer & Submissão</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Execução & Submissão para Aprovação</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Espaço de trabalho da tarefa:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Edição inline de progresso percentual e notas técnicas</li>
+              <li>• Upload de evidências em <code class="text-slate-200">TaskAttachment</code> (Base64)</li>
+              <li>• Visualização de marcos associados (<code class="text-slate-200">ProjectMilestone</code>)</li>
+              <li>• <strong>Drawer de Conclusão:</strong> Dispara transição para <code class="text-amber-400">pending_approval</code> e notifica o gestor do projeto</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SWIMLANE 3: Gestão de Tickets -->
+      <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-5" data-searchable data-module="gestao_tickets">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+          <div class="flex items-center space-x-3">
+            <span class="h-7 w-7 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold flex items-center justify-center text-xs font-mono">S3</span>
+            <div>
+              <h3 class="text-sm font-bold text-white">Swimlane 3: Gestão Completa de Chamados & Interação</h3>
+              <p class="text-[11px] text-slate-400">Abertura, observadores deduplicados, anexos em base64 e timeline de status auditável</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-surface-800 text-emerald-300 border border-surface-700">Módulo: gestao_tickets</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <!-- Step 3.1: Tickets Listing -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-400 font-mono">Passo 3.1 • /tickets</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Tabela Incremental</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Busca Debounced & Filtros</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Visualização de chamados com atualização otimizada:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Busca debounced de 300ms por assunto, ID e solicitante</li>
+              <li>• Facetas por Prioridade (<code class="text-slate-200">Rank 1..N</code>), Tipo e Equipe</li>
+              <li>• Status visual com badges temáticos dinâmicos</li>
+            </ul>
+          </div>
+
+          <!-- Step 3.2: Ticket Creation -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-400 font-mono">Passo 3.2 • /tickets/new</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">POST /_api/tickets/</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Dropzone & Watchers Deduplicados</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Formulário validado com regras rigorosas:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Multi-upload de anexos com encoding Base64 e validação de tamanho</li>
+              <li>• Seleção de Watchers (<code class="text-slate-200">TicketWatcher</code>) com deduplicação automática e validação de domínio corporativo</li>
+              <li>• Vínculo opcional com projeto ou código WBS pai</li>
+            </ul>
+          </div>
+
+          <!-- Step 3.3: Ticket Lifecycle & Timeline -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-400 font-mono">Passo 3.3 • /tickets/[id]</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Detalhes & Thread</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Timeline Auditável & Comentários</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Ciclo de vida do ticket com rastreamento permanente:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Linha do tempo vertical baseada na tabela <code class="text-slate-200">StatusTickets</code></li>
+              <li>• Thread de comentários (<code class="text-slate-200">TicketComment</code>) com flag de visibilidade para solicitante (<code class="text-slate-200">is_visible_to_user</code>)</li>
+              <li>• Cancelamento restrito por criador ou gestor com justificativa</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SWIMLANE 4: Pesquisa CSAT & Perfil do Usuário -->
+      <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-5" data-searchable data-module="gestao_suporte auth">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+          <div class="flex items-center space-x-3">
+            <span class="h-7 w-7 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold flex items-center justify-center text-xs font-mono">S4</span>
+            <div>
+              <h3 class="text-sm font-bold text-white">Swimlane 4: Avaliação de Satisfação (CSAT) & Transparência do Perfil</h3>
+              <p class="text-[11px] text-slate-400">Pesquisa pública tokenizada sem login e visualização da matriz de permissões do colaborador</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-surface-800 text-amber-300 border border-surface-700">Módulos: gestao_suporte / auth</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Step 4.1: Public CSAT Rating -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-400 font-mono">Passo 4.1 • /avaliar-suporte?token=...</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Token HMAC-SHA256</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Pesquisa de Satisfação CSAT (1-5 Estrelas)</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Ao concluir um ticket ou projeto de suporte, o solicitante recebe e-mail com link direto:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Acesso público sem login prévio (verificado via token criptográfico assinado)</li>
+              <li>• Interface interativa com escala de 1 a 5 estrelas e campo de comentário aberto</li>
+              <li>• Sanitização estrita contra XSS no backend e persistência em <code class="text-slate-200">Project.rating</code></li>
+              <li>• Encerramento imediato do ciclo do chamado com telemetria</li>
+            </ul>
+          </div>
+
+          <!-- Step 4.2: User Profile & PBAC Overview -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-cyan-400 font-mono">Passo 4.2 • /account</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Transparência Ativa</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Perfil do Colaborador & Matriz PBAC</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Página de auto-atendimento e transparência corporativa de acessos:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Dados funcionais: Nome, DAS Code, Equipe (<code class="text-slate-200">Teams</code>), Nível (<code class="text-slate-200">Levels</code>) e Perfil RH</li>
+              <li>• <strong>Matriz PBAC Transparente:</strong> Exibe quais dos 9 módulos o usuário tem direito de leitura ou edição (<code class="text-slate-200">can_edit</code>)</li>
+              <li>• Histórico de auditoria de sessões recentes e estações RDP conectadas</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: FLUXO DO GESTOR & APROVAÇÕES (6 SWIMLANES) -->
+    <!-- ========================================== -->
+    <section id="tab-managerflow" class="tab-panel space-y-8" role="tabpanel">
+
+      <!-- Header Banner -->
+      <div class="rounded-2xl bg-gradient-to-r from-surface-900 via-surface-850 to-brand-950/40 border border-surface-750 p-6 md:p-8 shadow-xl">
+        <div class="max-w-3xl space-y-2">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-500/15 border border-brand-500/30 text-brand-300 text-xs font-semibold">
+            <span>Controle Estratégico, Triagem & Governança Executiva</span>
+          </div>
+          <h2 class="text-2xl font-bold text-white tracking-tight">
+            Manager Flows: WBS, Carga, Valor RSP, Capacity & Aprovações
+          </h2>
+          <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+            Painéis de alta densidade analítica desenhados para lideranças técnicas e de negócio, com esteiras de decisão rápida de 1-Clique, travas transacionais de alocação de capacidade e auditoria contínua.
+          </p>
+        </div>
+      </div>
+
+      <!-- SWIMLANE 1: Visão Gerencial & Hierarquia WBS -->
+      <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-5" data-searchable data-module="gestao_gerencial">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+          <div class="flex items-center space-x-3">
+            <span class="h-7 w-7 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-bold flex items-center justify-center text-xs font-mono">M1</span>
+            <div>
+              <h3 class="text-sm font-bold text-white">Swimlane 1: Visão Gerencial, Fila de Triagem & Árvore WBS</h3>
+              <p class="text-[11px] text-slate-400">Monitoramento macro, triagem rápida inline e navegação genealógica em projetos umbrella</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-surface-800 text-indigo-300 border border-surface-700">Módulo: gestao_gerencial</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Step M1.1: Triagem & Dashboard -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-indigo-400 font-mono">Passo M1.1 • /gestao/dashboard</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Fila de Triagem</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Fila de Triagem Inline & Gargalos</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Painel operacional da liderança para rápida distribuição de demandas:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Triagem inline com alteração direta de prioridade, responsável técnico e status sem abrir modais pesados</li>
+              <li>• Visão consolidada de tarefas bloqueadas ou com prazo em risco (&lt; 48 horas)</li>
+              <li>• Resumo de solicitações pendentes de aprovação de conclusão enviadas pelos desenvolvedores</li>
+            </ul>
+          </div>
+
+          <!-- Step M1.2: WBS Tree & Top 5 KPIs -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-indigo-400 font-mono">Passo M1.2 • /gestao/gerencial</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Árvore WBS</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Hierarquia WBS & Top 5 KPIs Consolidados</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Visualizador da árvore WBS com nós raiz (Projetos Umbrella) e nós filhos recursivos:
+            </p>
+            <div class="grid grid-cols-5 gap-1.5 text-center font-mono text-[10px] my-2">
+              <div class="p-1.5 rounded bg-surface-900 border border-surface-750">
+                <span class="text-slate-400 block text-[9px]">Projetos</span>
+                <span class="text-cyan-400 font-bold">Ativos</span>
+              </div>
+              <div class="p-1.5 rounded bg-surface-900 border border-surface-750">
+                <span class="text-slate-400 block text-[9px]">Alocação</span>
+                <span class="text-emerald-400 font-bold">Horas</span>
+              </div>
+              <div class="p-1.5 rounded bg-surface-900 border border-surface-750">
+                <span class="text-slate-400 block text-[9px]">Progresso</span>
+                <span class="text-indigo-400 font-bold">Taxa %</span>
+              </div>
+              <div class="p-1.5 rounded bg-surface-900 border border-surface-750">
+                <span class="text-slate-400 block text-[9px]">CSAT</span>
+                <span class="text-amber-400 font-bold">Média</span>
+              </div>
+              <div class="p-1.5 rounded bg-surface-900 border border-surface-750">
+                <span class="text-slate-400 block text-[9px]">SLA</span>
+                <span class="text-rose-400 font-bold">Alertas</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400">
+              Diferenciação clara entre subprojetos com herança estrita de prioridade vs subprojetos com gestão autônoma de cronograma.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SWIMLANE 2: Projetos & Carga de Dados (2 Fases) -->
+      <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-5" data-searchable data-module="gestao_projetos">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+          <div class="flex items-center space-x-3">
+            <span class="h-7 w-7 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold flex items-center justify-center text-xs font-mono">M2</span>
+            <div>
+              <h3 class="text-sm font-bold text-white">Swimlane 2: Gestão de Projetos, Workspace & Carga de Dados em 2 Fases</h3>
+              <p class="text-[11px] text-slate-400">Editor WBS progressivo, painel de alocados e pipeline de importação Excel com Dry-Run e Concurrency State Hash</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-surface-800 text-cyan-300 border border-surface-700">Módulo: gestao_projetos</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Step M2.1: Project Workspace -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-cyan-400 font-mono">Passo M2.1 • /gestao/projetos/[id]</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Workspace Executivo</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Editor WBS & Equipe Alocada</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Gestão granular dos elementos do projeto:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Painel de colaboradores alocados (<code class="text-slate-200">ProjectAllocated</code>) com horas planejadas</li>
+              <li>• Marcos críticos de entrega (<code class="text-slate-200">ProjectMilestone</code>) com status de conclusão</li>
+              <li>• <strong>Comentários Gerenciais Internos:</strong> Flag <code class="text-amber-300">is_visible_to_allocated = false</code> para notas confidenciais de liderança</li>
+            </ul>
+          </div>
+
+          <!-- Step M2.2: 2-Phase Import Pipeline -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-400 font-mono">Passo M2.2 • Carga Excel 2 Fases</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Dry-Run + Hash</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Pipeline de Carga Protegido contra Concorrência</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Importação segura de planilhas de cronograma WBS:
+            </p>
+            <div class="space-y-1.5 text-[11px] text-slate-300">
+              <div class="p-2 rounded bg-surface-900 border border-surface-800">
+                <strong class="text-cyan-400">Fase 1 (Dry-Run):</strong> Valida formato (25MB, 5000 linhas), calcula diff de inserções/atualizações e gera preview visual sem alterar o banco de dados.
+              </div>
+              <div class="p-2 rounded bg-surface-900 border border-surface-800">
+                <strong class="text-emerald-400">Fase 2 (Commit com State Hash):</strong> Valida o hash SHA-256 de concorrência. Se outro gestor alterou o projeto no intervalo, o commit é cancelado com conflito seguro.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SWIMLANE 3: Suporte & Gestão de Valor (RSP) -->
+      <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-5" data-searchable data-module="gestao_suporte gestao_valor">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+          <div class="flex items-center space-x-3">
+            <span class="h-7 w-7 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold flex items-center justify-center text-xs font-mono">M3</span>
+            <div>
+              <h3 class="text-sm font-bold text-white">Swimlane 3: Monitoria de Suporte & Módulo de Gestão de Valor (RSP)</h3>
+              <p class="text-[11px] text-slate-400">Reuso unificado do motor de projetos para suporte, metodologia RSP (Tópicos 2 a 5), ROI e Payback</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-surface-800 text-emerald-300 border border-surface-700">Módulos: gestao_suporte / gestao_valor</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Step M3.1: Support Operations -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-400 font-mono">Passo M3.1 • /gestao/suporte</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">kind='support'</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Suporte com Motor Unificado de Projetos</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              O módulo de suporte opera sobre a tabela <code class="text-emerald-300">Project</code> com flag <code class="text-slate-200">kind='support'</code>:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Reuso completo do ecossistema de tarefas, alocações e anexos</li>
+              <li>• Painel de CSAT médio consolidado por equipe técnica</li>
+              <li>• Fechamento automático de chamados e disparo de pesquisa pública por token</li>
+            </ul>
+          </div>
+
+          <!-- Step M3.2: Value Analysis RSP -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-brand-400 font-mono">Passo M3.2 • /gestao/valor</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Módulo RSP</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Projeções Financeiras & Análise de Valor</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Cálculo quantitativo e qualitativo baseado em <code class="text-slate-200">ProjectValueAnalysis</code>:
+            </p>
+            <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-300">
+              <div class="p-2 rounded bg-surface-900 border border-surface-800">
+                <span class="text-brand-300 font-bold block">Tópico 2 & 3:</span>
+                <span class="text-slate-400 text-[10px]">Horas salvas e custos evitados via automação.</span>
+              </div>
+              <div class="p-2 rounded bg-surface-900 border border-surface-800">
+                <span class="text-brand-300 font-bold block">Tópico 4 & 5:</span>
+                <span class="text-slate-400 text-[10px]">Receita incremental e ganhos de satisfação.</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400">
+              Cálculo de ROI %, Payback em meses e emissão de relatório executivo formatado em HTML para diretoria.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SWIMLANE 4: Capacity & Sustentação (Pool & Transações Seguras) -->
+      <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-5" data-searchable data-module="gestao_capacity">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+          <div class="flex items-center space-x-3">
+            <span class="h-7 w-7 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold flex items-center justify-center text-xs font-mono">M4</span>
+            <div>
+              <h3 class="text-sm font-bold text-white">Swimlane 4: Planejamento de Capacity, Pool & Concorrência Segura</h3>
+              <p class="text-[11px] text-slate-400">Seletor de competência YYYY-MM, Pool de Sustentação com select_for_update e MyAPS estritamente não-monetário</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-surface-800 text-amber-300 border border-surface-700">Módulo: gestao_capacity</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <!-- Step M4.1: Monthly Capacity -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-400 font-mono">Passo M4.1 • /gestao/capacity</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">YYYY-MM</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Planejamento Individual de Capacity</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Configuração mensal de metas de alocação por recurso técnico:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Meta de horas padrão (<code class="text-slate-200">target_hours</code> ex: 168h/mês)</li>
+              <li>• Barra de progresso individual visualizando subalocação (&lt; 90%) ou sobrecarga (&gt; 100%)</li>
+              <li>• Segmentação por nível técnico e competência funcional</li>
+            </ul>
+          </div>
+
+          <!-- Step M4.2: Maintenance Pool -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-400 font-mono">Passo M4.2 • Pool de Sustentação</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">select_for_update</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Pool de Sustentação com Trava Transacional</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Reserva compartilhada de horas mensais para manutenção (<code class="text-slate-200">MaintenancePoolItem</code>):
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Distribuição de cotas de horas por projeto de sustentação contínua</li>
+              <li>• <strong>Trava de Concorrência:</strong> Operação de alocação protegida por <code class="text-amber-300">select_for_update()</code> no SQL Server para evitar sobre-alocação em acessos concorrentes</li>
+            </ul>
+          </div>
+
+          <!-- Step M4.3: MyAPS Non-Monetary -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-400 font-mono">Passo M4.3 • Extrato MyAPS</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Zero Monetário</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Integração MyAPS Estritamente Não-Monetária</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Diretriz corporativa de segurança e confidencialidade:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• O extrato enviado para colaboradores via <code class="text-slate-200">MyApsEmailLog</code> contém EXCLUSIVAMENTE horas e percentuais de esforço</li>
+              <li>• Tarifas horárias e valores financeiros são restritos a gestores PBAC autorizados</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SWIMLANE 5: Portais de Aprovação Tokenizada (1-Clique) -->
+      <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-5" data-searchable data-module="gestao_tickets gestao_projetos">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+          <div class="flex items-center space-x-3">
+            <span class="h-7 w-7 rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold flex items-center justify-center text-xs font-mono">M5</span>
+            <div>
+              <h3 class="text-sm font-bold text-white">Swimlane 5: Portais de Decisão Remota Tokenizada de 1-Clique</h3>
+              <p class="text-[11px] text-slate-400">Aprovação ágil por e-mail sem login obrigatório: Decisão atômica com HMAC-SHA256 e auditoria</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-surface-800 text-rose-300 border border-surface-700">Módulos: tickets / projetos</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Step M5.1: Ticket Approval -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-rose-400 font-mono">Passo M5.1 • /aprovar/[token]</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Aprovação Ticket</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Decisão de Abertura de Ticket em 1-Clique</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Quando um ticket exige aprovação da gerência:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• O gestor recebe e-mail com botões pré-assinados [Aprovar] e [Rejeitar]</li>
+              <li>• Acesso direto via token sem autenticação de usuário</li>
+              <li>• Ação atômica: Atualiza status do ticket, grava aprovação em <code class="text-slate-200">Approval</code> e dispara notificação para solicitante</li>
+            </ul>
+          </div>
+
+          <!-- Step M5.2: Task Approval -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-rose-400 font-mono">Passo M5.2 • /aprovar-tarefa/[token]</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Aprovação Tarefa</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Aprovação de Conclusão de Tarefa WBS</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Submissão de entrega pelo desenvolvedor:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Aprovação instantânea via query parameter <code class="text-emerald-400 font-mono">?action=approve</code></li>
+              <li>• Em caso de reprovação, abre formulário simples exigindo o preenchimento de justificativa técnica</li>
+              <li>• Atualiza <code class="text-slate-200">ProjectTask.approval_status</code> e notifica o executor alocado</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SWIMLANE 6: Governança, Configurações & Auditoria Forense -->
+      <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-5" data-searchable data-module="configuracoes super_user audit">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+          <div class="flex items-center space-x-3">
+            <span class="h-7 w-7 rounded-lg bg-surface-750 text-slate-300 border border-surface-700 font-bold flex items-center justify-center text-xs font-mono">M6</span>
+            <div>
+              <h3 class="text-sm font-bold text-white">Swimlane 6: Governança PBAC, Configurações & Auditoria Forense</h3>
+              <p class="text-[11px] text-slate-400">Matriz de permissões nos 9 módulos, catálogo dos 27 eventos, telemetria 7x24 e impersonação auditada</p>
+            </div>
+          </div>
+          <span class="text-xs font-mono px-2.5 py-1 rounded bg-surface-800 text-slate-300 border border-surface-700">Módulos: config / audit / super_user</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <!-- Step M6.1: PBAC Matrix -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-300 font-mono">Passo M6.1 • Matriz PBAC</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">9 Módulos</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Governança de Acessos & Revogação</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Administração centralizada de privilégios:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Toggle granular de permissão de Leitura vs Edição (<code class="text-slate-200">can_edit</code>)</li>
+              <li>• <strong>Revogação com Snapshot:</strong> Congelamento automático em <code class="text-rose-400">WithdrawnPermissionSnapshot</code> para investigação de conformidade</li>
+            </ul>
+          </div>
+
+          <!-- Step M6.2: 27 Events Catalog -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-300 font-mono">Passo M6.2 • Notificações</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">27 Eventos</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Catálogo de Eventos & Destinatários</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Controle do despacho em <code class="text-slate-200">NotificationSetting</code>:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Toggle de ativação global por tipo de evento de negócio</li>
+              <li>• Seleção de papéis notificados: Solicitante, Watcher, Responsável, Gestor de Módulo ou Superusuário</li>
+              <li>• Adição de e-mails em cópia institucional via JSON</li>
+            </ul>
+          </div>
+
+          <!-- Step M6.3: Forensic Audit & Impersonation -->
+          <div class="p-4 rounded-xl bg-surface-850 border border-surface-750 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-300 font-mono">Passo M6.3 • Auditoria AES-256</span>
+              <span class="px-2 py-0.5 text-[10px] rounded bg-surface-800 text-slate-300 font-mono">Forense & 7x24</span>
+            </div>
+            <div class="text-xs font-semibold text-white">Auditoria Criptografada & Impersonação</div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Rastreamento de ponta a ponta:
+            </p>
+            <ul class="text-[11px] text-slate-400 space-y-1">
+              <li>• Gravação imutável em <code class="text-slate-200">AuditLog</code> com payload sensível cifrado em AES-256</li>
+              <li>• Telemetria de uso 7x24 via <code class="text-slate-200">PageActivityLog</code> (tempo ativo, idle e rota)</li>
+              <li>• Impersonação assistida com registro explícito de quem agiu em nome de quem</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: BANCO DE DADOS, ESQUEMAS & ERD (35) -->
+    <!-- ========================================== -->
+    <section id="tab-erd" class="tab-panel space-y-8" role="tabpanel">
+
+      <!-- Header Banner -->
+      <div class="rounded-2xl bg-gradient-to-r from-surface-900 via-surface-850 to-emerald-950/40 border border-surface-750 p-6 md:p-8 shadow-xl">
+        <div class="max-w-3xl space-y-2">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
+            <span>Modelagem Relacional de Dados Normalizada</span>
+          </div>
+          <h2 class="text-2xl font-bold text-white tracking-tight">
+            Arquitetura de Dados: 35 Modelos em 5 Domínios de Negócio
+          </h2>
+          <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+            Mapeamento exaustivo do banco de dados (Microsoft SQL Server / Django ORM). Cada modelo é exibido em um card estruturado com Primary Key (PK), Foreign Keys (FK) explícitas, Índices (IDX) e Restrições Únicas (UQ).
+          </p>
+        </div>
+
+        <!-- 5 Domains Metric Bar -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mt-6 pt-5 border-t border-surface-750/80 font-mono text-xs">
+          <div class="p-2.5 rounded-lg bg-surface-900/80 border border-surface-750">
+            <span class="text-slate-400 block text-[10px]">Domínio A</span>
+            <span class="text-emerald-400 font-bold">4 Modelos Core</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-surface-900/80 border border-surface-750">
+            <span class="text-slate-400 block text-[10px]">Domínio B</span>
+            <span class="text-indigo-400 font-bold">7 Modelos WBS</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-surface-900/80 border border-surface-750">
+            <span class="text-slate-400 block text-[10px]">Domínio C</span>
+            <span class="text-cyan-400 font-bold">11 Modelos Tickets</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-surface-900/80 border border-surface-750">
+            <span class="text-slate-400 block text-[10px]">Domínio D</span>
+            <span class="text-amber-400 font-bold">5 Modelos Capacity</span>
+          </div>
+          <div class="p-2.5 rounded-lg bg-surface-900/80 border border-surface-750">
+            <span class="text-slate-400 block text-[10px]">Domínio E</span>
+            <span class="text-rose-400 font-bold">8 Modelos Governança</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOMÍNIO A: Core / Users / Auth (4 Modelos) -->
+      <div class="space-y-4">
+        <div class="flex items-center space-x-3 border-b border-surface-800 pb-2">
+          <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs">DOMÍNIO A</span>
+          <h3 class="text-base font-bold text-white">Core, Usuários & Autenticação (4 Modelos)</h3>
+          <span class="text-xs text-slate-400 font-mono">App: users</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- Model: Teams -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-emerald-500/50" data-searchable data-module="auth">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-emerald-400 block">Teams</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: teams</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_team (AutoField) [PK]</div>
+              <div class="text-slate-300">name (CharField)</div>
+              <div class="text-slate-400">description (TextField)</div>
+              <div class="text-slate-400">is_default (BooleanField)</div>
+            </div>
+          </div>
+
+          <!-- Model: Levels -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-emerald-500/50" data-searchable data-module="auth">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-emerald-400 block">Levels</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: levels</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_levels (AutoField) [PK]</div>
+              <div class="text-slate-300">name (CharField)</div>
+              <div class="text-slate-400">description (TextField)</div>
+            </div>
+          </div>
+
+          <!-- Model: Users -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-emerald-500/50" data-searchable data-module="auth">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-emerald-400 block">Users</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: users</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_users (AutoField) [PK]</div>
+              <div class="text-slate-200">email (CharField) [UQ]</div>
+              <div class="text-slate-200">das_code (CharField) [UQ]</div>
+              <div class="text-indigo-400">id_levels -> Levels [FK]</div>
+              <div class="text-indigo-400">id_team -> Teams [FK]</div>
+              <div class="text-slate-400">name (CharField)</div>
+              <div class="text-slate-400">employee_id [IDX]</div>
+              <div class="text-slate-500">is_active, is_staff, is_superuser</div>
+            </div>
+          </div>
+
+          <!-- Model: EmployeeProfile -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-emerald-500/50" data-searchable data-module="auth">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-emerald-400 block">EmployeeProfile</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: employee_profiles</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">employee_id (Int) [PK]</div>
+              <div class="text-indigo-400">id_team -> Teams [FK]</div>
+              <div class="text-slate-400">creat_at (DateTime)</div>
+              <div class="text-slate-400">update_at (DateTime)</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- DOMÍNIO B: Projects / WBS / Tasks / TimeEntry (7 Modelos) -->
+      <div class="space-y-4">
+        <div class="flex items-center space-x-3 border-b border-surface-800 pb-2">
+          <span class="px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold text-xs">DOMÍNIO B</span>
+          <h3 class="text-base font-bold text-white">Projetos, WBS, Tarefas & Alocações (7 Modelos)</h3>
+          <span class="text-xs text-slate-400 font-mono">App: tickets</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          
+          <!-- Model: Project -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-indigo-500/50" data-searchable data-module="gestao_projetos gestao_gerencial">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-indigo-400 block">Project</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: projects (WBS Genealógica)</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_project (AutoField) [PK]</div>
+              <div class="text-cyan-400">ticket -> Tickets [1-to-1]</div>
+              <div class="text-amber-400 font-bold">parent_project -> Project [Auto-FK]</div>
+              <div class="text-slate-200">name, kind, wbs (CharField)</div>
+              <div class="text-slate-300">project_status, pending_status</div>
+              <div class="text-indigo-400">priority -> Priorities [FK]</div>
+              <div class="text-slate-400">recurso_employee_id [IDX]</div>
+              <div class="text-slate-400">start_date, deadline, rating</div>
+            </div>
+          </div>
+
+          <!-- Model: ProjectTask -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-indigo-500/50" data-searchable data-module="gestao_projetos">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-indigo-400 block">ProjectTask</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: project_tasks</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_task (AutoField) [PK]</div>
+              <div class="text-indigo-400">project -> Project [FK]</div>
+              <div class="text-slate-200">title, task_status, approval_status</div>
+              <div class="text-slate-300">assigned_to_employee_id [IDX]</div>
+              <div class="text-slate-300">allocated_hours (DecimalField)</div>
+              <div class="text-slate-400">submitted_by_employee_id</div>
+              <div class="text-slate-400">rejection_reason, cancellation_reason</div>
+            </div>
+          </div>
+
+          <!-- Model: TaskAttachment -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-indigo-500/50" data-searchable data-module="gestao_projetos">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-indigo-400 block">TaskAttachment</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: project_task_attachments</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_attachment (AutoField) [PK]</div>
+              <div class="text-indigo-400">task -> ProjectTask [FK]</div>
+              <div class="text-slate-200">file_name (CharField)</div>
+              <div class="text-slate-400">base64_file (TextField), size</div>
+              <div class="text-slate-400">uploaded_by_employee_id</div>
+            </div>
+          </div>
+
+          <!-- Model: ProjectComment -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-indigo-500/50" data-searchable data-module="gestao_projetos">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-indigo-400 block">ProjectComment</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: project_comments</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-indigo-400">project -> Project [FK]</div>
+              <div class="text-indigo-400">author -> Users [FK]</div>
+              <div class="text-slate-300">text (TextField)</div>
+              <div class="text-amber-400 font-bold">is_visible_to_allocated (Bool)</div>
+            </div>
+          </div>
+
+          <!-- Model: ProjectCommentAttachment -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-indigo-500/50" data-searchable data-module="gestao_projetos">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-indigo-400 block">ProjectCommentAttachment</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: project_comment_attachments</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-indigo-400">comment -> ProjectComment [FK]</div>
+              <div class="text-slate-200">file_name, base64_file, size</div>
+              <div class="text-slate-400">created_at (DateTimeField)</div>
+            </div>
+          </div>
+
+          <!-- Model: ProjectAllocated -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-indigo-500/50" data-searchable data-module="gestao_projetos">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-indigo-400 block">ProjectAllocated</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: project_allocated</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-indigo-400">project -> Project [FK]</div>
+              <div class="text-slate-200">email (CharField)</div>
+              <div class="text-slate-400">created_at (DateTimeField)</div>
+            </div>
+          </div>
+
+          <!-- Model: ProjectMilestone -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-indigo-500/50" data-searchable data-module="gestao_projetos">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-indigo-400 block">ProjectMilestone</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: project_milestones</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_milestone (AutoField) [PK]</div>
+              <div class="text-indigo-400">project -> Project [FK]</div>
+              <div class="text-slate-200">title (CharField)</div>
+              <div class="text-slate-300">target_date (DateField)</div>
+              <div class="text-emerald-400 font-bold">is_completed (BooleanField)</div>
+              <div class="text-slate-400">completed_at (DateTimeField)</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- DOMÍNIO C: Tickets / Support / CSAT (11 Modelos) -->
+      <div class="space-y-4">
+        <div class="flex items-center space-x-3 border-b border-surface-800 pb-2">
+          <span class="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 font-mono font-bold text-xs">DOMÍNIO C</span>
+          <h3 class="text-base font-bold text-white">Tickets, Chamados & Ciclo de Suporte (11 Modelos)</h3>
+          <span class="text-xs text-slate-400 font-mono">App: tickets</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- Priorities -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-cyan-500/50" data-searchable data-module="gestao_tickets">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-cyan-400 block">Priorities</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: priorities</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_priority (AutoField) [PK]</div>
+              <div class="text-slate-200">code (CharField) [UQ]</div>
+              <div class="text-slate-300">label (CharField)</div>
+              <div class="text-amber-400">rank (PositiveSmallInt)</div>
+              <div class="text-slate-400">is_default (BooleanField)</div>
+            </div>
+          </div>
+
+          <!-- TypeTickets -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-cyan-500/50" data-searchable data-module="gestao_tickets">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-cyan-400 block">TypeTickets</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: type_tickets</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_type_ticket (AutoField) [PK]</div>
+              <div class="text-slate-200">code (CharField) [UQ]</div>
+              <div class="text-slate-300">label (CharField)</div>
+              <div class="text-slate-400">is_default (BooleanField)</div>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-cyan-500/50" data-searchable data-module="gestao_tickets">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-cyan-400 block">Status</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: status</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_status (AutoField) [PK]</div>
+              <div class="text-slate-200">name (CharField)</div>
+              <div class="text-slate-400">description (TextField)</div>
+            </div>
+          </div>
+
+          <!-- Tickets -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-cyan-500/50" data-searchable data-module="gestao_tickets gestao_suporte">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-cyan-400 block">Tickets</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: tickets</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_tickets (AutoField) [PK]</div>
+              <div class="text-indigo-400">id_users -> Users [FK]</div>
+              <div class="text-indigo-400">id_teams -> Teams [FK]</div>
+              <div class="text-indigo-400">id_status -> Status [FK]</div>
+              <div class="text-indigo-400">id_priority -> Priorities [FK]</div>
+              <div class="text-indigo-400">id_type_ticket -> TypeTickets [FK]</div>
+              <div class="text-cyan-400">project -> Project [FK]</div>
+              <div class="text-slate-200">subject, question, wbs</div>
+            </div>
+          </div>
+
+          <!-- Attachements -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-cyan-500/50" data-searchable data-module="gestao_tickets">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-cyan-400 block">Attachements</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: attachements</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_attachements (AutoField) [PK]</div>
+              <div class="text-cyan-400">ticket -> Tickets [FK]</div>
+              <div class="text-slate-200">file_name (CharField)</div>
+              <div class="text-slate-400">base64_file (TextField), size</div>
+              <div class="text-slate-400">created_at (DateTimeField)</div>
+            </div>
+          </div>
+
+          <!-- Approval -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-cyan-500/50" data-searchable data-module="gestao_tickets">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-cyan-400 block">Approval</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: approvals</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_approval (AutoField) [PK]</div>
+              <div class="text-cyan-400">ticket -> Tickets [FK]</div>
+              <div class="text-indigo-400">approver -> Users [FK]</div>
+              <div class="text-slate-300">decision (CharField)</div>
+              <div class="text-slate-400">reason (TextField)</div>
+            </div>
+          </div>
+
+          <!-- StatusTickets -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-cyan-500/50" data-searchable data-module="gestao_tickets">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-cyan-400 block">StatusTickets</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: status_tickets</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_status_tickets (AutoField) [PK]</div>
+              <div class="text-cyan-400">ticket -> Tickets [FK]</div>
+              <div class="text-cyan-400">id_status -> Status [FK]</div>
+              <div class="text-emerald-400 font-bold">active (BooleanField)</div>
+              <div class="text-slate-400">creat_at, update_at</div>
+            </div>
+          </div>
+
+          <!-- TicketWatcher -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-cyan-500/50" data-searchable data-module="gestao_tickets">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-cyan-400 block">TicketWatcher</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: tickets_watcher_employees</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_ticket_watcher (AutoField) [PK]</div>
+              <div class="text-cyan-400">ticket -> Tickets [FK]</div>
+              <div class="text-slate-300">employee_id [IDX]</div>
+              <div class="text-slate-200">email [IDX]</div>
+              <div class="text-slate-400">creat_at (DateTimeField)</div>
+            </div>
+          </div>
+
+          <!-- TicketComment -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-cyan-500/50" data-searchable data-module="gestao_tickets">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-cyan-400 block">TicketComment</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: ticket_comments</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-cyan-400">ticket -> Tickets [FK]</div>
+              <div class="text-indigo-400">author -> Users [FK]</div>
+              <div class="text-slate-300">text (TextField)</div>
+              <div class="text-cyan-400 font-bold">is_visible_to_user (Bool)</div>
+            </div>
+          </div>
+
+          <!-- CommentAttachment -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-cyan-500/50" data-searchable data-module="gestao_tickets">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-cyan-400 block">CommentAttachment</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: comment_attachments</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-cyan-400">comment -> TicketComment [FK]</div>
+              <div class="text-slate-200">file_name (CharField)</div>
+              <div class="text-slate-400">base64_file, size, created_at</div>
+            </div>
+          </div>
+
+          <!-- TicketAuditLog -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-cyan-500/50" data-searchable data-module="gestao_tickets audit">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-cyan-400 block">TicketAuditLog</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: ticket_audit_log</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-cyan-400">ticket -> Tickets [FK]</div>
+              <div class="text-indigo-400">actor -> Users [FK]</div>
+              <div class="text-slate-300">action, field_name</div>
+              <div class="text-slate-400">old_value, new_value, description</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- DOMÍNIO D: Capacity / Pool / MyAPS (5 Modelos) -->
+      <div class="space-y-4">
+        <div class="flex items-center space-x-3 border-b border-surface-800 pb-2">
+          <span class="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 font-mono font-bold text-xs">DOMÍNIO D</span>
+          <h3 class="text-base font-bold text-white">Capacity, Pool de Sustentação & MyAPS (5 Modelos)</h3>
+          <span class="text-xs text-slate-400 font-mono">App: tickets</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <!-- CapacityConfig -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-amber-500/50" data-searchable data-module="gestao_capacity">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-amber-400 block">CapacityConfig</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: capacity_configs</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-slate-200">default_target_hours (Decimal)</div>
+              <div class="text-slate-400">internal_wbs_prefixes (TextField)</div>
+              <div class="text-slate-400">updated_at, updated_by_email</div>
+            </div>
+          </div>
+
+          <!-- CapacityMemberConfig -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-amber-500/50" data-searchable data-module="gestao_capacity">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-amber-400 block">CapacityMemberConfig</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: capacity_member_configs</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-indigo-400">user -> Users [FK]</div>
+              <div class="text-slate-300">competence [IDX] (YYYY-MM)</div>
+              <div class="text-amber-400 font-bold">target_hours (DecimalField)</div>
+              <div class="text-slate-400">gcm_code, user_email [IDX]</div>
+            </div>
+          </div>
+
+          <!-- MaintenancePoolItem -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-amber-500/50" data-searchable data-module="gestao_capacity">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-amber-400 block">MaintenancePoolItem</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: maintenance_pool_items</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-indigo-400">project -> Project [FK]</div>
+              <div class="text-slate-200">wbs_code, monthly_hours</div>
+              <div class="text-amber-400 font-bold">is_active (BooleanField)</div>
+              <div class="text-slate-400">start_competence, end_competence</div>
+            </div>
+          </div>
+
+          <!-- MaintenancePoolAllocation -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-amber-500/50" data-searchable data-module="gestao_capacity">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-amber-400 block">MaintenancePoolAllocation</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: maintenance_pool_allocations</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-amber-400">pool_item -> MaintenancePoolItem [FK]</div>
+              <div class="text-indigo-400">target_user -> Users [FK]</div>
+              <div class="text-amber-400 font-bold">allocated_hours (Decimal)</div>
+              <div class="text-indigo-400">assigned_by -> Users [FK]</div>
+            </div>
+          </div>
+
+          <!-- MyApsEmailLog -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-amber-500/50" data-searchable data-module="gestao_capacity">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-amber-400 block">MyApsEmailLog</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: my_aps_email_logs</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-slate-300">competence [IDX] (YYYY-MM)</div>
+              <div class="text-slate-300">recipient_email [IDX]</div>
+              <div class="text-slate-400">payload_snapshot (JSONField)</div>
+              <div class="text-slate-400">sent_at (DateTimeField)</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- DOMÍNIO E: Governance / Permissions / Audit / Notifications (8 Modelos) -->
+      <div class="space-y-4">
+        <div class="flex items-center space-x-3 border-b border-surface-800 pb-2">
+          <span class="px-2.5 py-1 rounded bg-rose-500/20 text-rose-300 font-mono font-bold text-xs">DOMÍNIO E</span>
+          <h3 class="text-base font-bold text-white">Governança PBAC, Auditoria Forense & Notificações (8 Modelos)</h3>
+          <span class="text-xs text-slate-400 font-mono">Apps: tickets / notifications</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- ModulePermission -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-rose-500/50" data-searchable data-module="configuracoes super_user">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-rose-400 block">ModulePermission</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: module_permissions</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-slate-200">module (CharField)</div>
+              <div class="text-slate-200">email (CharField)</div>
+              <div class="text-rose-400 font-bold">can_edit (BooleanField)</div>
+              <div class="text-slate-400">granted_by, created_at</div>
+            </div>
+          </div>
+
+          <!-- WithdrawnPermissionSnapshot -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-rose-500/50" data-searchable data-module="configuracoes super_user audit">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-rose-400 block">WithdrawnPermissionSnapshot</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: withdrawn_permission_snapshots</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-slate-200">email (CharField)</div>
+              <div class="text-amber-400">snapshot_json (JSONField)</div>
+              <div class="text-rose-400 font-bold">withdrawn_at (DateTimeField)</div>
+              <div class="text-slate-400">withdrawn_by (CharField)</div>
+            </div>
+          </div>
+
+          <!-- AuditLog -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-rose-500/50" data-searchable data-module="audit configuracoes super_user">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-rose-400 block">AuditLog</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: audit_logs</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (BigAutoField) [PK]</div>
+              <div class="text-indigo-400">actor -> Users [FK]</div>
+              <div class="text-slate-300">module, entity_type, entity_id</div>
+              <div class="text-slate-400">client_ip, session_id</div>
+              <div class="text-amber-400 font-bold">encrypted_payload (AES-256)</div>
+            </div>
+          </div>
+
+          <!-- PageActivityLog -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-rose-500/50" data-searchable data-module="audit">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-rose-400 block">PageActivityLog</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: page_activity_logs</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_log (BigAutoField) [PK]</div>
+              <div class="text-indigo-400">user -> Users [FK]</div>
+              <div class="text-slate-300">duration_active_seconds</div>
+              <div class="text-slate-300">duration_idle_seconds</div>
+              <div class="text-slate-400">last_heartbeat_at</div>
+            </div>
+          </div>
+
+          <!-- ProjectValueAnalysis -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-rose-500/50" data-searchable data-module="gestao_valor">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-rose-400 block">ProjectValueAnalysis</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: project_value_analysis</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_value_analysis (AutoField) [PK]</div>
+              <div class="text-indigo-400">project -> Project [1-to-1]</div>
+              <div class="text-slate-300">fte_hours_per_month, technical_rate</div>
+              <div class="text-brand-300">topic2_items..topic5_items (JSON)</div>
+              <div class="text-slate-400">status_rsp, updated_at</div>
+            </div>
+          </div>
+
+          <!-- RspGcmRate -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-rose-500/50" data-searchable data-module="gestao_valor">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-rose-400 block">RspGcmRate</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: rsp_gcm_rates</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (AutoField) [PK]</div>
+              <div class="text-slate-200">gcm (CharField) [UQ]</div>
+              <div class="text-emerald-400 font-bold">hourly_rate (DecimalField)</div>
+              <div class="text-slate-400">updated_at, updated_by_email</div>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-rose-500/50" data-searchable data-module="configuracoes">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-rose-400 block">Notifications</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: notifications</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id_notifications (AutoField) [PK]</div>
+              <div class="text-slate-200">title (CharField)</div>
+              <div class="text-slate-300">content (TextField)</div>
+              <div class="text-cyan-400">id_tickets -> Tickets [FK]</div>
+            </div>
+          </div>
+
+          <!-- NotificationSetting -->
+          <div class="rounded-xl bg-surface-900 border border-surface-750 p-4 space-y-3 print-card transition hover:border-rose-500/50" data-searchable data-module="configuracoes">
+            <div class="border-b border-surface-800 pb-2">
+              <span class="text-xs font-mono font-bold text-rose-400 block">NotificationSetting</span>
+              <span class="text-[10px] text-slate-400 font-mono">tabela: notification_settings</span>
+            </div>
+            <div class="space-y-1 font-mono text-[11px]">
+              <div class="text-emerald-300 font-bold">id (BigAutoField) [PK]</div>
+              <div class="text-slate-200">key (SlugField) [UQ]</div>
+              <div class="text-emerald-400 font-bold">enabled (BooleanField)</div>
+              <div class="text-slate-300">notify_requester..notify_superuser</div>
+              <div class="text-slate-400">extra_emails (JSONField)</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- WBS Genealogic Self-Reference Breakdown Table -->
+      <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-4" data-searchable data-module="gestao_projetos gestao_gerencial">
+        <div class="border-b border-surface-800 pb-3">
+          <h4 class="text-sm font-bold text-white flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
+            <span>Genealogia da Auto-Referência WBS (`parent_project` em `Project`)</span>
+          </h4>
+          <p class="text-xs text-slate-400">Como a árvore recursiva resolve hierarquias de Projetos Umbrella e nós filhos sem risco de referências circulares</p>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left font-mono text-[11px] border border-surface-800 rounded-lg overflow-hidden">
+            <thead class="bg-surface-850 text-slate-300">
+              <tr>
+                <th class="p-3 border-b border-surface-750">Nível</th>
+                <th class="p-3 border-b border-surface-750">Tipo de Nó</th>
+                <th class="p-3 border-b border-surface-750">parent_project</th>
+                <th class="p-3 border-b border-surface-750">Herança de Prioridade</th>
+                <th class="p-3 border-b border-surface-750">Escopo de Tarefas</th>
+                <th class="p-3 border-b border-surface-750">Exemplo WBS</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-800 text-slate-300">
+              <tr>
+                <td class="p-3 font-bold text-cyan-400">Nível 0</td>
+                <td class="p-3 font-semibold text-white">Projeto Raiz (Umbrella)</td>
+                <td class="p-3 text-slate-500">NULL</td>
+                <td class="p-3 text-slate-400">Define a prioridade primária do programa</td>
+                <td class="p-3">Consolida KPIs de todos os subprojetos</td>
+                <td class="p-3 text-indigo-300">PRJ-2026-001</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold text-indigo-400">Nível 1</td>
+                <td class="p-3 font-semibold text-white">Subprojeto de Entrega</td>
+                <td class="p-3 text-indigo-300">FK -> Projeto Raiz</td>
+                <td class="p-3 text-emerald-400">Herda se não explicitamente sobrescrito</td>
+                <td class="p-3">Possui backlog próprio de tarefas executáveis</td>
+                <td class="p-3 text-indigo-300">PRJ-2026-001.01</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold text-amber-400">Nível 2</td>
+                <td class="p-3 font-semibold text-white">Pacote de Trabalho / Frente</td>
+                <td class="p-3 text-amber-300">FK -> Subprojeto N1</td>
+                <td class="p-3 text-slate-400">Herança em cascata determinística</td>
+                <td class="p-3">Alocação de horas diretas em `ProjectTask`</td>
+                <td class="p-3 text-indigo-300">PRJ-2026-001.01.03</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 5: PIPELINES & MATRIZ DE TESTES (100%) -->
+    <!-- ========================================== -->
+    <section id="tab-pipelines" class="tab-panel space-y-8" role="tabpanel">
+
+      <!-- Header Banner -->
+      <div class="rounded-2xl bg-gradient-to-r from-surface-900 via-surface-850 to-amber-950/40 border border-surface-750 p-6 md:p-8 shadow-xl">
+        <div class="max-w-3xl space-y-2">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-semibold">
+            <span>Rigor de Engenharia & Qualidade de Software</span>
+          </div>
+          <h2 class="text-2xl font-bold text-white tracking-tight">
+            Pipelines Críticos & Matriz Base de Testes (Rumo a 100%)
+          </h2>
+          <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+            Detalhamento dos três motores algorítmicos mais críticos do sistema e a matriz consolidada de cobertura com o plano de ação cirúrgico para atingir 100% de cobertura de código.
+          </p>
+        </div>
+      </div>
+
+      <!-- 3 CRITICAL PIPELINES -->
+      <div class="space-y-6">
+        <div class="border-b border-surface-800 pb-2">
+          <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+            <span class="h-2.5 w-2.5 rounded-full bg-amber-400"></span>
+            <span>Três Pipelines Críticos do Sistema</span>
+          </h3>
+          <p class="text-xs text-slate-400">Fluxos com processamento assíncrono, grafos acíclicos dirigidos (DAG) e criptografia de integridade</p>
+        </div>
+
+        <!-- PIPELINE 1: Excel Import & Kahn Algorithm -->
+        <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-4" data-searchable data-module="gestao_projetos">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+            <div class="flex items-center space-x-3">
+              <span class="h-7 w-7 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold flex items-center justify-center text-xs font-mono">P1</span>
+              <div>
+                <h4 class="text-sm font-bold text-white">Pipeline 1: Importação de Planilhas Excel com Ordenação Topológica de Kahn</h4>
+                <p class="text-[11px] text-slate-400">Resolução determinística de dependências entre tarefas WBS, detecção de ciclo e Concurrency State Hash</p>
+              </div>
+            </div>
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-surface-800 text-emerald-400 border border-surface-700">Teto: 25MB / 5.000 linhas</span>
+          </div>
+
+          <!-- Orthogonal Pipeline Steps -->
+          <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-2 text-xs font-mono">
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 flex flex-col justify-between">
+              <span class="text-emerald-400 font-bold">1. Upload</span>
+              <p class="text-[10px] text-slate-300 font-sans mt-1">Validação MIME multipart e checagem de teto (25MB).</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 flex flex-col justify-between">
+              <span class="text-emerald-400 font-bold">2. Schema</span>
+              <p class="text-[10px] text-slate-300 font-sans mt-1">Normalização de colunas (WBS, Tarefa, Horas, Alocado).</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 flex flex-col justify-between">
+              <span class="text-emerald-400 font-bold">3. DAG Build</span>
+              <p class="text-[10px] text-slate-300 font-sans mt-1">Construção do Grafo Acíclico Dirigido de precedências.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 flex flex-col justify-between">
+              <span class="text-amber-400 font-bold">4. Kahn Sort</span>
+              <p class="text-[10px] text-slate-300 font-sans mt-1">Processamento por fila in-degree zero para ordenação.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 flex flex-col justify-between">
+              <span class="text-rose-400 font-bold">5. Ciclo Trap</span>
+              <p class="text-[10px] text-slate-300 font-sans mt-1">Se nós restantes &gt; 0: erro imediato com nós em loop.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 flex flex-col justify-between">
+              <span class="text-cyan-400 font-bold">6. State Hash</span>
+              <p class="text-[10px] text-slate-300 font-sans mt-1">Cálculo SHA-256 do diff para validação de versão concorrente.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 flex flex-col justify-between">
+              <span class="text-emerald-400 font-bold">7. Atomic Commit</span>
+              <p class="text-[10px] text-slate-300 font-sans mt-1">Persistência atômica idempotente em ProjectTask.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PIPELINE 2: CSAT & Approval Token Lifecycle -->
+        <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-4" data-searchable data-module="gestao_tickets gestao_suporte">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+            <div class="flex items-center space-x-3">
+              <span class="h-7 w-7 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-bold flex items-center justify-center text-xs font-mono">P2</span>
+              <div>
+                <h4 class="text-sm font-bold text-white">Pipeline 2: Ciclo de Vida de Tokens Criptográficos HMAC-SHA256 (CSAT & Aprovações)</h4>
+                <p class="text-[11px] text-slate-400">Deep links seguros de 1-Clique sem necessidade de autenticação prévia de usuário</p>
+              </div>
+            </div>
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-surface-800 text-indigo-400 border border-surface-700">TimestampSigner Cripto</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs font-mono">
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 space-y-1">
+              <span class="text-indigo-400 font-bold block">1. Assinatura HMAC</span>
+              <p class="text-[10px] text-slate-300 font-sans">Payload: ID da entidade, salt por ação e expiração (48h a 7d).</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 space-y-1">
+              <span class="text-indigo-400 font-bold block">2. Deep Link</span>
+              <p class="text-[10px] text-slate-300 font-sans">Geração da URL: /aprovar/[token] ou /avaliar-suporte?token=...</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 space-y-1">
+              <span class="text-indigo-400 font-bold block">3. Zero-Login Gateway</span>
+              <p class="text-[10px] text-slate-300 font-sans">Validação criptográfica sem exigir login prévio ou cookies de sessão.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 space-y-1">
+              <span class="text-emerald-400 font-bold block">4. Transição Atômica</span>
+              <p class="text-[10px] text-slate-300 font-sans">Atualização atômica de status do chamado ou tarefa de projeto.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 space-y-1">
+              <span class="text-rose-400 font-bold block">5. Log Forense</span>
+              <p class="text-[10px] text-slate-300 font-sans">Invalidação e registro imediato de evidência no AuditLog.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PIPELINE 3: 27 Events Notification Engine -->
+        <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-4" data-searchable data-module="configuracoes">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+            <div class="flex items-center space-x-3">
+              <span class="h-7 w-7 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-bold flex items-center justify-center text-xs font-mono">P3</span>
+              <div>
+                <h4 class="text-sm font-bold text-white">Pipeline 3: Despachante de Notificações de 27 Eventos com Resolução de 5 Papéis</h4>
+                <p class="text-[11px] text-slate-400">Deduplicação de e-mails, execução em ContextThread não-bloqueante e envio via Semantix HubAPI</p>
+              </div>
+            </div>
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-surface-800 text-cyan-400 border border-surface-700">5 Papéis + ContextThread</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-6 gap-3 text-xs font-mono">
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 space-y-1">
+              <span class="text-cyan-400 font-bold block">1. Event Trigger</span>
+              <p class="text-[10px] text-slate-300 font-sans">Sinal de negócio disparado em services.py.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 space-y-1">
+              <span class="text-cyan-400 font-bold block">2. Setting Lookup</span>
+              <p class="text-[10px] text-slate-300 font-sans">Consulta a matriz de NotificationSetting.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 space-y-1">
+              <span class="text-indigo-400 font-bold block">3. 5 Roles Matrix</span>
+              <p class="text-[10px] text-slate-300 font-sans">Resolução: requester, watcher, assignee, manager, superuser.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 space-y-1">
+              <span class="text-amber-400 font-bold block">4. Deduplicação</span>
+              <p class="text-[10px] text-slate-300 font-sans">Normalização de e-mails e exclusão do ator para evitar auto-spam.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 space-y-1">
+              <span class="text-purple-400 font-bold block">5. ContextThread</span>
+              <p class="text-[10px] text-slate-300 font-sans">Thread desacoplada assíncrona com preservação de contexto.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-surface-850 border border-surface-750 space-y-1">
+              <span class="text-emerald-400 font-bold block">6. HubAPI Relay</span>
+              <p class="text-[10px] text-slate-300 font-sans">POST HTTP de alta vazão na HubAPI (com fallback SMTP).</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CONSOLIDATED TEST COVERAGE MATRIX -->
+      <div class="rounded-2xl bg-surface-900 border border-surface-800 p-6 shadow-xl space-y-6" data-searchable>
+        <div class="border-b border-surface-800 pb-3">
+          <div class="flex items-center space-x-2">
+            <span class="px-2 py-0.5 rounded bg-brand-500/20 text-brand-300 font-mono font-bold text-xs">QUALIDADE & TESTABILIDADE</span>
+            <span class="text-xs font-mono text-emerald-400 font-bold">1.396 Testes Atuais -> Rumo a 100%</span>
+          </div>
+          <h3 class="text-lg font-bold text-white mt-1">Matriz Consolidada de Cobertura de Testes & Plano de Ação</h3>
+          <p class="text-xs text-slate-400">Diagnóstico empírico dos números reais do repositório, mapeamento de lacunas e plano de fechamento</p>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left font-mono text-xs border border-surface-800 rounded-xl overflow-hidden">
+            <thead class="bg-surface-850 text-slate-300">
+              <tr>
+                <th class="p-3 border-b border-surface-750">Camada / Módulo</th>
+                <th class="p-3 border-b border-surface-750">Escopo Atual</th>
+                <th class="p-3 border-b border-surface-750">Testes Aprovados</th>
+                <th class="p-3 border-b border-surface-750">Cobertura %</th>
+                <th class="p-3 border-b border-surface-750">Lacunas Mapeadas</th>
+                <th class="p-3 border-b border-surface-750">Plano de Ação para Meta 100%</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-800 text-slate-300">
+              
+              <!-- Backend Core & Tickets -->
+              <tr>
+                <td class="p-3 font-bold text-indigo-400">Backend: Core & Tickets</td>
+                <td class="p-3 text-slate-300">Services, Models, PBAC, Signals, Cargas</td>
+                <td class="p-3 font-bold text-emerald-400">812 testes</td>
+                <td class="p-3 font-bold text-emerald-400">84.0% Global</td>
+                <td class="p-3 text-amber-300">views.py (62%), commands (0%), tokens.py (61%), hub_client.py (63%)</td>
+                <td class="p-3 text-slate-300 font-sans">
+                  • Testes de edge cases de rede na HubAPI (timeout, erro 500)<br />
+                  • Cobertura dos comandos CLI de carga (management commands)<br />
+                  • Simulação de tokens HMAC adulterados e expirados
+                </td>
+              </tr>
+
+              <!-- Frontend: Rules & Math -->
+              <tr>
+                <td class="p-3 font-bold text-cyan-400">Frontend: Regras & Math</td>
+                <td class="p-3 text-slate-300">Cálculos WBS, Horas, Validações, Formatters</td>
+                <td class="p-3 font-bold text-emerald-400">584 testes</td>
+                <td class="p-3 font-bold text-emerald-400">100.0% Math</td>
+                <td class="p-3 text-emerald-400">Zero lacunas em funções utilitárias</td>
+                <td class="p-3 text-slate-300 font-sans">
+                  • Manter cobertura total em novos cálculos de ROI e Payback
+                </td>
+              </tr>
+
+              <!-- Frontend: Componentes & UI -->
+              <tr>
+                <td class="p-3 font-bold text-amber-400">Frontend: Componentes React</td>
+                <td class="p-3 text-slate-300">Telas Next.js, Drawers, Modais, Dropzones</td>
+                <td class="p-3 font-bold text-rose-400">0 testes</td>
+                <td class="p-3 font-bold text-rose-400">0.0% Visual</td>
+                <td class="p-3 text-rose-400">Ausência de testes de renderização de componentes e falta de MSW</td>
+                <td class="p-3 text-slate-300 font-sans">
+                  • Instalar Vitest + React Testing Library<br />
+                  • Implementar MSW v2 (Mock Service Worker) para simular `/_api`<br />
+                  • Testar estados de loading, empty e erro em todas as telas
+                </td>
+              </tr>
+
+              <!-- Integração & Contratos -->
+              <tr>
+                <td class="p-3 font-bold text-purple-400">Integração & Contratos</td>
+                <td class="p-3 text-slate-300">Contratos de API entre DRF e TanStack Query</td>
+                <td class="p-3 font-bold text-slate-500">Parcial</td>
+                <td class="p-3 font-bold text-amber-400">~45.0%</td>
+                <td class="p-3 text-amber-300">Falta de validação estrita de schemas de payload JSON</td>
+                <td class="p-3 text-slate-300 font-sans">
+                  • Testes de contrato OpenAPI validando paridade de tipos de resposta<br />
+                  • Testes de integração ponta a ponta para transições atômicas
+                </td>
+              </tr>
+
+              <!-- E2E & Concorrência -->
+              <tr>
+                <td class="p-3 font-bold text-rose-400">E2E & Concorrência</td>
+                <td class="p-3 text-slate-300">Fluxos completos de ponta a ponta e travas</td>
+                <td class="p-3 font-bold text-slate-500">Manual</td>
+                <td class="p-3 font-bold text-rose-400">0.0% Auto</td>
+                <td class="p-3 text-rose-400">Testes de concorrência com threads simultâneas em select_for_update</td>
+                <td class="p-3 text-slate-300 font-sans">
+                  • Testes automatizados com Playwright para os 4 User Flows<br />
+                  • Teste de stress de concorrência no Pool de Sustentação
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Practical Roadmap to 100% -->
+        <div class="rounded-xl bg-surface-850 border border-surface-750 p-4 space-y-3 font-mono text-xs">
+          <div class="text-sm font-bold text-white flex items-center space-x-2">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Roteiro de 3 Passos para Consagração da Meta 100% de Cobertura</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+            <div class="p-3 rounded-lg bg-surface-900 border border-surface-800">
+              <span class="text-indigo-400 font-bold block mb-1">Passo 1: Backend 84% -> 100%</span>
+              <p class="text-[11px] text-slate-300 font-sans">Criar fixtures para falhas de rede no hub_client, cobrir os 3 comandos CLI em management/commands e adicionar 42 novos testes em views.py.</p>
+            </div>
+            <div class="p-3 rounded-lg bg-surface-900 border border-surface-800">
+              <span class="text-cyan-400 font-bold block mb-1">Passo 2: Frontend MSW + RTL</span>
+              <p class="text-[11px] text-slate-300 font-sans">Configurar handlers MSW espelhando todos os endpoints /_api e escrever testes de componentes para os 4 fluxos de usuário.</p>
+            </div>
+            <div class="p-3 rounded-lg bg-surface-900 border border-surface-800">
+              <span class="text-amber-400 font-bold block mb-1">Passo 3: E2E Playwright</span>
+              <p class="text-[11px] text-slate-300 font-sans">Suite Playwright headless rodando no CI/CD simulando login, triagem de projeto, carga de dados Excel e aprovação remota via token.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Global Enterprise Footer -->
+  <footer class="mt-auto bg-surface-900 border-t border-surface-800 py-6 px-4 sm:px-6 lg:px-8 text-xs text-slate-400 no-print">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-2">
+        <span class="font-bold text-white">DT-Gestão-Ticket</span>
+        <span>•</span>
+        <span>Semantix Digital Transformation</span>
+        <span>•</span>
+        <span class="text-slate-500 font-mono">Engenharia de Software Enterprise</span>
+      </div>
+      <div class="flex items-center space-x-4 font-mono text-[11px]">
+        <span>Status: <strong class="text-emerald-400">Verificado em Produção</strong></span>
+        <span>Paridade Visual: <strong class="text-cyan-400">100%</strong></span>
+        <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="text-slate-300 hover:text-white transition">
+          Voltar ao Topo ↑
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Pure Vanilla JavaScript Engine -->
+  <script>
+    // State management in memory
+    const state = {
+      activeTab: 'tab-overview',
+      activeModule: 'all',
+      searchQuery: '',
+    };
+
+    // Tab Switcher
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      
+      // Update Tab Panels
+      const panels = document.querySelectorAll('.tab-panel');
+      panels.forEach(panel => {
+        if (panel.id === tabId) {
+          panel.classList.add('active');
+        } else {
+          panel.classList.remove('active');
+        }
+      });
+
+      // Update Navigation Buttons
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach(btn => {
+        const isTarget = btn.getAttribute('data-tab') === tabId;
+        btn.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+        if (isTarget) {
+          btn.classList.add('active', 'bg-brand-600', 'text-white', 'shadow-md', 'shadow-brand-600/30');
+          btn.classList.remove('text-slate-300', 'hover:bg-surface-800');
+        } else {
+          btn.classList.remove('active', 'bg-brand-600', 'text-white', 'shadow-md', 'shadow-brand-600/30');
+          btn.classList.add('text-slate-300', 'hover:bg-surface-800');
+        }
+      });
+
+      // Update URL hash without jumping
+      history.replaceState(null, null, '#' + tabId);
+
+      // Re-apply filters on the new tab
+      applyFilters();
+    }
+
+    // Global Search Handler
+    function handleSearch(query) {
+      state.searchQuery = query.trim().toLowerCase();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (state.searchQuery.length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      applyFilters();
+    }
+
+    // Clear Search Input
+    function clearSearch() {
+      const searchInput = document.getElementById('globalSearch');
+      searchInput.value = '';
+      state.searchQuery = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      applyFilters();
+    }
+
+    // Module Filter Pill Selection
+    function filterByModule(moduleName) {
+      state.activeModule = moduleName;
+
+      // Update Pill Buttons
+      const pills = document.querySelectorAll('.module-filter-btn');
+      pills.forEach(pill => {
+        const isCurrent = pill.getAttribute('data-module') === moduleName;
+        if (isCurrent) {
+          pill.classList.add('active', 'bg-brand-600', 'text-white');
+          pill.classList.remove('bg-surface-800', 'text-slate-300');
+        } else {
+          pill.classList.remove('active', 'bg-brand-600', 'text-white');
+          pill.classList.add('bg-surface-800', 'text-slate-300');
+        }
+      });
+
+      applyFilters();
+    }
+
+    // Central Filter Evaluator
+    function applyFilters() {
+      const currentPanel = document.getElementById(state.activeTab);
+      if (!currentPanel) return;
+
+      const items = currentPanel.querySelectorAll('[data-searchable]');
+      let visibleCount = 0;
+      let totalItems = items.length;
+
+      items.forEach(el => {
+        const textContent = el.textContent.toLowerCase();
+        const elementModules = (el.getAttribute('data-module') || '').toLowerCase().split(' ');
+
+        // Check search match
+        const matchesQuery = state.searchQuery === '' || textContent.includes(state.searchQuery);
+
+        // Check module match
+        let matchesModule = state.activeModule === 'all';
+        if (!matchesModule) {
+          matchesModule = elementModules.includes(state.activeModule.toLowerCase());
+        }
+
+        if (matchesQuery && matchesModule) {
+          el.style.display = '';
+          visibleCount++;
+        } else {
+          el.style.display = 'none';
+        }
+      });
+
+      // Update Filter Counter Badge
+      const counterEl = document.getElementById('filterCount');
+      if (counterEl) {
+        if (state.searchQuery !== '' || state.activeModule !== 'all') {
+          counterEl.textContent = `Exibindo ${visibleCount} de ${totalItems} elementos`;
+          counterEl.classList.remove('text-slate-400');
+          counterEl.classList.add('text-brand-300');
+        } else {
+          counterEl.textContent = 'Todos os elementos visíveis';
+          counterEl.classList.remove('text-brand-300');
+          counterEl.classList.add('text-slate-400');
+        }
+      }
+    }
+
+    // URL Hash Routing on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && document.getElementById(hash)) {
+        switchTab(hash);
+      } else {
+        switchTab('tab-overview');
+      }
+    });
+
+    // Keyboard Accessibility for Tabs (Left / Right Arrows)
+    document.addEventListener('keydown', (e) => {
+      if (e.target.classList && e.target.classList.contains('tab-btn')) {
+        const tabs = Array.from(document.querySelectorAll('.tab-btn'));
+        const index = tabs.indexOf(e.target);
+        if (e.key === 'ArrowRight') {
+          const nextIndex = (index + 1) % tabs.length;
+          tabs[nextIndex].focus();
+          tabs[nextIndex].click();
+        } else if (e.key === 'ArrowLeft') {
+          const prevIndex = (index - 1 + tabs.length) % tabs.length;
+          tabs[prevIndex].focus();
+          tabs[prevIndex].click();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
